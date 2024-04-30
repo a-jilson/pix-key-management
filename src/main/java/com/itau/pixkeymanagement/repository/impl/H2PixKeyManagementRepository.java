@@ -59,16 +59,44 @@ public class H2PixKeyManagementRepository implements PixKeyManagementRepository 
     @Override
     public List<PixKey> getKey(PixKey pixKey) {
 
-        List<PixKeyDTO> keyList = repository.findByCriteria(pixKey.getKeyType(), pixKey.getAccountNumber(),
-                                            pixKey.getAgencyNumber(), pixKey.getAccountHolderName(),
-                                            pixKey.getInsertionTime(), pixKey.getDeactivationTime());
+        List<PixKeyDTO> keyList = new ArrayList<>();
+        if (pixKey.getAccountNumber() != null)
+        {
+            PixKeyDTO keyDTO = repository.findByAccountNumber(pixKey.getAccountNumber());
+            keyList.add(keyDTO);
+
+        } else if (pixKey.getAgencyNumber() != null)
+        {
+            PixKeyDTO keyDTO = repository.findByAgencyNumber(pixKey.getAgencyNumber());
+            keyList.add(keyDTO);
+        } else if (pixKey.getAccountHolderName() != null)
+        {
+            PixKeyDTO keyDTO = repository.findByAccountHolderName(pixKey.getAccountHolderName());
+            keyList.add(keyDTO);
+        }else if (pixKey.getKeyType() != null)
+        {
+            PixKeyDTO keyDTO = repository.findByKeyType(pixKey.getKeyType());
+            keyList.add(keyDTO);
+        }else if (pixKey.getInsertionTime() != null)
+        {
+            PixKeyDTO keyDTO = repository.findByInsertionTime(pixKey.getInsertionTime());
+            keyList.add(keyDTO);
+
+        }else if (pixKey.getDeactivationTime() != null)
+        {
+            PixKeyDTO keyDTO = repository.findByDeactivationTime(pixKey.getDeactivationTime());
+            keyList.add(keyDTO);
+        }
 
         List<PixKey> returnList = new ArrayList<>();
 
         for (PixKeyDTO keyDTO : keyList)
         {
-            keyDTO.setIsActive(null);
-            returnList.add(MapperUtil.mapToPixKey(keyDTO));
+            if (keyDTO != null)
+            {
+                keyDTO.setIsActive(null);
+                returnList.add(MapperUtil.mapToPixKey(keyDTO));
+            }
 
         }
         return returnList;
